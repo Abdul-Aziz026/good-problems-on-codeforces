@@ -1,0 +1,119 @@
+// link: https://codeforces.com/contest/1814/problem/E
+// dp on segment tree
+
+/*...Bismillahir Rahmanir Rahim...*/
+// #pragma GCC optimize ("Ofast,unroll-loops")
+// #pragma GCC target ("avx2")
+#include <bits/stdc++.h>
+using namespace std;
+
+//debug..........
+#ifdef Abdul_Aziz
+#include "debug.cpp"
+#else
+#define dbg(x...)
+#endif
+
+#define   int  long long
+#define   ll   long long
+#define   ld   long double
+#define   pb   push_back
+#define   vi   vector<int>
+#define   bitcount(x)  (int)__builtin_popcount(x)
+#define   Lsb(x)  (int)__builtin_ctzll(x)
+#define   fast  ios_base::sync_with_stdio(0),cin.tie(0),cout.tie(0)
+#define   sz(x)  (int)x.size()
+#define   all(a) (a).begin(),(a).end()
+#define   Yes  cout << "YES\n"
+#define   No  cout << "NO\n"
+#define   ff   first
+#define   ss   second
+#define   endl  "\n"
+#define   pi   acos(-1.0)
+#define   pii  pair<int,int>
+#define   lcm(a,b) (a/__gcd(a, b)*b)
+#define   For(i, n) for (int i=0;i<n;++i)
+
+const int  mod = 998244353 ;
+const int N = 200005 ;
+const int inf = 1000000000000LL;
+
+struct Data{
+    int a[2][2];
+    Data() {
+        a[0][0] = a[0][1] = a[1][0] = a[1][1] = 1e18;
+    }
+};
+int n ;
+
+struct Segtree {
+    int n ;
+    vector <Data> tree ;
+    Segtree(int x) {
+        n = 1 ;
+        while (n < x) n <<= 1;
+        tree.resize((n<<1)+1) ;
+    }
+
+    // a[0][0] = no edge taken 
+    // a[1][1] = taken left, right both end 
+    // a[1][0] = taken left end not taken right end 
+    // a[0][1] = not taken left end taken right end 
+    Data cal(const Data& x, const Data &y) {
+        Data res;
+        For (i, 2) {
+            For (j, 2) {
+                For(k, 2) {
+                    For(l, 2) {
+                        if (j+k==0) continue;
+                        int cc = x.a[i][j] + y.a[k][l] ;
+                        res.a[i][l] = min(res.a[i][l], cc) ;
+                    }
+                }
+            }
+        }
+        return res;
+    }
+
+    Data setv(int l, int val) {
+        Data x;
+        x.a[1][1] = val;
+        x.a[0][0] = 0;
+        return x;
+    }
+
+    void update(int at, int l, int r, int idx, int val) {
+        if (idx > r or idx < l) return ;
+        if (idx >= r && idx <= l) {
+            tree[at] = setv(idx, val);
+            return ;
+        }
+        int m = (l+r)>>1 ;
+        update(at*2, l, m, idx, val) ;
+        update(at*2+1, m+1, r, idx, val) ;
+        tree[at] = cal(tree[at<<1], tree[at<<1|1]);
+    }
+
+    int query() {
+        return 2LL * tree[1].a[1][1] ;
+    }
+};
+
+signed main()
+{
+    fast ;
+    cin >> n ;
+    --n;
+    Segtree Q(n);
+    for (int i=1;i<=n;++i) {
+        int x; cin >> x ;
+        Q.update(1, 1, n, i, x);
+    }
+    int q; cin >> q;
+    while (q--) {
+        int idx, x; cin >> idx >> x ;
+        Q.update(1, 1, n, idx, x);
+        cout << Q.query() << endl;
+    }
+    return 0 ;
+}
