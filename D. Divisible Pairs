@@ -1,4 +1,13 @@
 // https://codeforces.com/contest/1931/problem/D
+/*
+(ai + aj) % x = (ai - aj)%y
+ai % x + aj % x = ai % y - aj % y
+ai % x - ai % y = -aj % x  - aj % y
+ai % x - ai % y = (x - aj) % x  - aj % y
+
+
+short note:  -p % m ==  (m - p) % m...
+*/
 inline void solve() {
     int n, x, y ; cin >> n >> x >> y ;
     vi a(n);
